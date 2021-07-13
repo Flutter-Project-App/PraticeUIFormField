@@ -1,41 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application/data/models/patient.dart';
 import 'package:flutter_application/utils/colors.dart';
-
-class DescriptionPatient {
-  const DescriptionPatient({
-    required this.bed,
-    required this.name,
-    required this.age,
-    required this.gender,
-    required this.diseases,
-  })  : assert(bed != null),
-        assert(name != null),
-        assert(age != null),
-        assert(gender != null),
-        assert(diseases != null);
-
-  final int bed;
-  final String name;
-  final String age;
-  final String gender;
-  final String diseases;
-}
-
-List<DescriptionPatient> destinations(BuildContext context) => [
-      DescriptionPatient(
-          bed: 02,
-          name: "Đoàn Việt Anh",
-          age: "35",
-          gender: "Nữ",
-          diseases: "Đau dạ dày mãn tĩnh"),
-      DescriptionPatient(
-          bed: 03,
-          name: "Đoàn Việt Anh",
-          age: "35",
-          gender: "Nữ",
-          diseases: "Đau dạ dày mãn tĩnh")
-    ];
 
 class ListPatientPage extends StatelessWidget {
   static const ROUTE_NAME = 'ListPatientPage';
@@ -46,6 +12,7 @@ class ListPatientPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Danh sách bệnh nhân'),
         titleTextStyle: TextStyle(fontSize: 10),
+        centerTitle: true,
       ),
       body: ListPatientView(),
     );
@@ -64,6 +31,12 @@ class _ListPatientViewState extends State<ListPatientView>
   TabController? _tabController;
 
   final RestorableInt tabIndex = RestorableInt(0);
+
+  final List<Patient> patientList = [
+    Patient("02", "Đoàn Việt Anh", "35", "Nữ", "Đau dạ dày mãn tĩnh"),
+    Patient("04", "Đoàn Việt", "35", "Nam", "Đau dạ dày mãn tĩnh"),
+    Patient("04", "Đoàn Việt", "35", "Nam", "Đau dạ dày mãn tĩnh"),
+  ];
 
   @override
   String? get restorationId => 'tab_scrollable_demo';
@@ -117,108 +90,90 @@ class _ListPatientViewState extends State<ListPatientView>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // DescriptionPatientItem(destination: destinations(context), shape: shape)
-          for (final tab in tabs) Text(tab)
+          Container(
+              child: ListView.builder(
+                  itemCount: patientList.length,
+                  itemBuilder: (BuildContext context, index) =>
+                      buildPatientCard(context, index))),
+          Text(tabs[1]),
+          Text(tabs[2]),
+          Text(tabs[3]),
+          Text(tabs[4]),
         ],
       ),
     );
   }
 
-  Widget? DescriptionPatientItem {
-
-  const height = 300.0;
-  final DescriptionPatient destination;
-  final ShapeBorder shape;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            SectionTitle(),
-            SizedBox(
-              height: height,
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                shape: shape,
-                child: InkWell(
-                  onTap: () {},
-                  splashColor:
-                  Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-                  highlightColor: Colors.transparent,
-                  child: DescriptionPatientContent(destination: destination,),
+  Widget buildPatientCard(BuildContext context, int index) {
+    return Container(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print("1");
+        },
+        splashColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+        highlightColor: Colors.transparent,
+        child: Card(
+          margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                width: 16,
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 16),
+                alignment: Alignment.center,
+                height: 40,
+                width: 40,
+                decoration:
+                    BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
+                child: Text(
+                  patientList[index].bed,
+                  style:
+                      TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-}
-
-// class DescriptionPatientItem extends StatelessWidget {
-//   const DescriptionPatientItem(
-//       {Key? key, required this.destination, required this.shape})
-//       : assert(destination != null),
-//         super(key: key);
-
-
-class SectionTitle extends StatelessWidget {
-  const SectionTitle({Key? key, this.title}) : super(key: key);
-
-  final String? title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 4, 4, 12),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(title!),
-      ),
-    );
-  }
-}
-
-class DescriptionPatientContent extends StatelessWidget {
-  const DescriptionPatientContent({Key? key, required this.destination})
-      : assert(destination != null),
-        super(key: key);
-  
-  final DescriptionPatient destination;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final titleStyle = theme.textTheme.headline5!.copyWith(color: Colors.white);
-    final descriptionStyle = theme.textTheme.subtitle1;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 184,
-          child: Row(
-            children: [
-              Text(destination.age.toString()),
-              SizedBox(width: 12,),
+              SizedBox(
+                width: 12,
+              ),
               Column(
-                children: [
-                  Text(destination.name),
-                  Text("${destination.age} tuổi, ${destination.gender}"),
-                  Text(destination.diseases),
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    patientList[index].name,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(
+                      "${patientList[index].age} tuổi, ${patientList[index].gender}",
+                      style: TextStyle(
+                        fontSize: 12,
+                      )),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(patientList[index].diseases,
+                      style: TextStyle(
+                        fontSize: 12,
+                      )),
+                  SizedBox(
+                    height: 16,
+                  )
                 ],
               )
             ],
-
-          )
-        )
-      ],
+          ),
+        ),
+      ),
     );
   }
 }
